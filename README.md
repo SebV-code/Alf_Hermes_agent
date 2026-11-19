@@ -109,9 +109,18 @@ Alf décide d’abord s’il a besoin d’aide. Dans la majorité des demandes s
 
 Quand la spécialisation apporte une vraie valeur, il choisit quelques profils parmi trois groupes :
 
-- **Construire et prouver** : Forge développe, Patch diagnostique et teste, Sentinelle encadre les opérations sensibles.
-- **Décider et critiquer** : Boussole mesure l’impact et le coût de coordination, Surmoi cherche les risques concrets.
-- **Apporter une spécialité** : DataFox analyse les données, Mosaic documente, Ziggy explore, Pixel travaille l’interface.
+- **Construire et prouver** :<br>
+  **Forge** développe,<br>
+  **Patch** diagnostique et teste,<br>
+  **Sentinelle** encadre les opérations sensibles.
+- **Décider et critiquer** :<br>
+  **Boussole** mesure l’impact et le coût de coordination,<br>
+  **Surmoi** cherche les risques concrets.
+- **Apporter une spécialité** :<br>
+  **DataFox** analyse les données,<br>
+  **Mosaic** documente,<br>
+  **Ziggy** explore,<br>
+  **Pixel** travaille l’interface.
 
 Les profils ont des configurations et des sessions distinctes. Alf consolide leurs contributions et garde la responsabilité de la décision finale. Deux cycles de critique au maximum ; ensuite, il tranche.
 
