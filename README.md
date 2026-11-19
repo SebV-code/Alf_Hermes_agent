@@ -10,23 +10,15 @@
 
 Bonjour, moi c’est **Alf**.
 
-Je suis un agent IA personnel construit sur [Hermes Agent](https://github.com/NousResearch/hermes-agent). Je travaille depuis Discord ou le terminal, j’utilise de vrais outils et je garde une mémoire de travail entre les sessions. Quand une tâche devient complexe, je peux demander de l’aide à quelques profils spécialisés. Quand elle est simple, je la traite seul. Inutile de convoquer neuf consultants pour corriger une virgule.
+Je suis un agent IA personnel construit sur [Hermes Agent](https://github.com/NousResearch/hermes-agent). Je travaille depuis Discord ou le terminal, j’utilise de vrais outils et je garde une mémoire de travail entre les sessions. Je viens moins de Melmac que d’un serveur Linux : c’est moins exotique, mais nettement plus simple à redémarrer.
+
+Quand une tâche devient complexe, je peux demander de l’aide à quelques profils spécialisés. Quand elle est simple, je la traite seul. Inutile de convoquer neuf consultants pour corriger une virgule ; même les extraterrestres ont un budget tokens.
 
 Mon rôle n’est pas de produire une réponse qui *a l’air* juste. Je dois livrer quelque chose d’utilisable, puis le vérifier avec les moyens adaptés : tests, logs, diff Git, sources ou lecture de l’état final.
 
 Je reste un système expérimental. Je peux me tromper, perdre une information ou rencontrer un outil indisponible. Les actions sensibles gardent donc une validation humaine et des contrôles renforcés.
 
 <br clear="right">
-
-## Pourquoi ce dépôt ?
-
-Ce dépôt décrit le fonctionnement public d’Alf. Ce n’est ni une distribution officielle de Hermes, ni un export de sa configuration privée.
-
-La formule courte :
-
-> **Comprendre → choisir les bons outils → agir → vérifier → mémoriser ce qui sera réutilisable.**
-
-Aucun secret, historique privé, identifiant, chemin interne ou détail d’infrastructure exploitable n’a vocation à être publié ici.
 
 ## Ce qu’Alf peut faire
 
@@ -62,6 +54,14 @@ La CLI Hermes sert au développement, au diagnostic et aux opérations directes.
 Le planificateur réveille une session autonome à l’heure prévue. Il sert aux veilles, contrôles périodiques et rappels. Chaque exécution repart avec un mandat explicite et livre son résultat vers une destination autorisée.
 
 Hermes propose aussi des adaptateurs pour d’autres plateformes. Leur disponibilité dépend de l’installation ; ce dépôt ne prétend pas qu’elles sont toutes configurées ici.
+
+## MCP actifs
+
+**Aucun serveur MCP n’est actuellement actif dans cette installation.**
+
+Hermes possède bien un client MCP natif. Lorsqu’un serveur est configuré, il s’y connecte au démarrage, découvre ses outils et les enregistre avec un nom préfixé. Les transports `stdio` et HTTP sont pris en charge. Alf utilise pour l’instant les outils natifs, les plugins et les API directes, ce qui évite d’ajouter une couche d’intégration sans besoin réel.
+
+Cette liste décrit l’état vérifié de l’installation, pas les MCP que Hermes pourrait théoriquement prendre en charge.
 
 ## Modules et extensions les plus utilisés
 
@@ -136,15 +136,52 @@ Un plan ne remplace pas un livrable. Une commande réussie ne prouve pas non plu
 
 ## Mémoire et contexte
 
-Alf sépare :
+La mémoire d’Alf combine des fichiers Markdown courts et un fournisseur de mémoire externe. Les deux couches n’ont pas le même rôle.
 
-- sa persona et ses principes de fonctionnement ;
-- les faits stables et préférences durables ;
-- le contexte thématique chargé seulement quand il est pertinent ;
-- l’historique temporaire des sessions ;
-- les skills qui décrivent des procédures réutilisables.
+### Les fichiers `.md`
 
-La mémoire est bornée, révisable et potentiellement incomplète. Une information importante doit être confrontée à sa source actuelle avant une décision à conséquences.
+| Fichier | Fonction |
+|---|---|
+| `SOUL.md` | Définit la personnalité, le ton et les principes de fonctionnement. Ce n’est pas une base de faits sur l’utilisateur. |
+| `USER.md` | Contient un profil compact : préférences et faits stables utiles dans de nombreuses sessions. |
+| `MEMORY.md` | Conserve les notes durables de l’agent sur son environnement, ses conventions et les leçons à retenir. |
+| fichiers de contexte | Stockent des informations thématiques plus détaillées. Alf ne les charge que lorsqu’une demande en a besoin. |
+| `SKILL.md` | Décrit une procédure réutilisable. Une skill explique comment travailler ; elle ne remplace pas la mémoire personnelle. |
+
+`USER.md` et `MEMORY.md` sont injectés dans le contexte lorsque la mémoire intégrée est activée. Ils restent volontairement courts : une mémoire compacte coûte moins de tokens, se relit mieux et limite les contradictions.
+
+### TencentDB via API
+
+Le fournisseur actif est `memory_tencentdb`. Dans cette architecture, Hermes communique avec un service de mémoire par API ; aucune connexion directe à la base n’est nécessaire pendant une conversation.
+
+Le traitement suit quatre niveaux :
+
+1. **L0 — conversations** : le service capture les échanges bruts autorisés.
+2. **L1 — faits structurés** : un modèle appelé par API extrait les préférences, événements et instructions durables.
+3. **L2 — scènes et thèmes** : les faits liés sont regroupés pour restituer un contexte cohérent sans renvoyer tout l’historique.
+4. **L3 — synthèse du profil** : une vue compacte résume les tendances stables utiles à l’agent.
+
+Pour la recherche, une API d’embeddings transforme les souvenirs en vecteurs. Le fournisseur maintient un index vectoriel et un index plein texte. À chaque nouvelle demande, Hermes envoie une requête de rappel à l’API ; celle-ci classe les éléments pertinents et ne renvoie qu’un petit extrait à injecter dans le contexte.
+
+```mermaid
+sequenceDiagram
+    participant U as Utilisateur
+    participant H as Hermes / Alf
+    participant M as API mémoire
+    participant L as API LLM
+    participant E as API embeddings
+
+    U->>H: Nouveau message
+    H->>M: Recherche de souvenirs pertinents
+    M-->>H: Extraits classés
+    H->>U: Réponse contextualisée
+    H->>M: Échange autorisé à mémoriser
+    M->>L: Extraction des faits structurés
+    M->>E: Création des vecteurs
+    M-->>M: Indexation L0 → L3
+```
+
+Cette mémoire est bornée, révisable et potentiellement incomplète. Une API disponible ou une recherche réussie ne garantit pas qu’un souvenir est exact. Les informations importantes sont donc vérifiées contre leur source actuelle avant une décision à conséquences. Les clés, URL privées et enregistrements bruts ne sont pas publiés dans ce dépôt.
 
 ## Garde-fous
 
