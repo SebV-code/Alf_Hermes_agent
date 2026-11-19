@@ -55,12 +55,19 @@ Le planificateur réveille une session autonome à l’heure prévue. Il sert au
 
 Hermes propose aussi des adaptateurs pour d’autres plateformes. Leur disponibilité dépend de l’installation ; ce dépôt ne prétend pas qu’elles sont toutes configurées ici.
 
-## Wokflow de developpement 
 
-<img src="assets/Sans-titre-2026-09-15-0942.png">
 
 ## Connexions d'Alf 
 
+<img src="assets/image.png"> 
+
+## Gestion de la mémoire 
+
+<img src="assets/image2.png">
+
+## Wokflow de developpement 
+
+<img src="assets/Sans-titre-2026-09-15-0942.png">
 
 ## Modules et extensions les plus utilisés
 
