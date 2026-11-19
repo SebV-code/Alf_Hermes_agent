@@ -64,8 +64,10 @@ Hermes propose aussi des adaptateurs pour d’autres plateformes. Leur disponibi
 ## Gestion de la mémoire 
 
 Le but a été de trouver un équilibre entre la taille de la mémoire injectée et la consommation en token du contexte.
-Le soul.md qui est injecté à chaque requête doit rester sobre.
-La mémoire vectorisée proposé par le plugin tencent memory db est un très bon compromis, puisqu'elle vectorise toutes les conversations à l'aide de petits appels api à des modèles légers d'embeddings. Cette gestion de la memory a été game changer dans l'utilisation d'Alf
+Le soul.md qui est injecté à chaque requête doit rester sobre. 
+
+La mémoire vectorisée proposée par le plugin tencent memory db est un très bon compromis, puisqu'elle vectorise toutes les conversations à l'aide de petits appels api à des modèles légers d'embeddings. Puis n'injecte dans  le contexte que le strict nécessaire. 
+Cette gestion de la memory a été game changer dans l'utilisation d'Alf
 
 <img src="assets/image3.png">
 
