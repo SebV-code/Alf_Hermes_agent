@@ -1,8 +1,7 @@
 # Alf — agent IA autonome basé sur Hermes
 
 [![Hermes Agent](https://img.shields.io/badge/Hermes-Agent-6f42c1)](https://github.com/NousResearch/hermes-agent)
-[![Langue](https://img.shields.io/badge/langue-français-0055A4)](#)
-[![Statut](https://img.shields.io/badge/statut-expérimental-orange)](#)
+
 
 ## Le mot d’Alf
 
