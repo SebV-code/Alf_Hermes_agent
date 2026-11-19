@@ -63,26 +63,12 @@ Hermes propose aussi des adaptateurs pour d’autres plateformes. Leur disponibi
 
 ## Gestion de la mémoire 
 
-<img src="assets/image2.png">
+Le but a été de trouver un équilibre entre la taille de la mémoire injectée et la consommation en token du contexte.
+Le soul.md qui est injecté à chaque requête doit rester sobre.
+La mémoire vectorisée proposé par le plugin tencent memory db est un très bon compromis, puisqu'elle vectorise toutes les conversations à l'aide de petits appels api à des modèles légers d'embeddings. Cette gestion de la memory a été game changer dans l'utilisation d'Alf
 
-## Wokflow de developpement 
+<img src="assets/image3.png">
 
-<img src="assets/Sans-titre-2026-09-15-0942.png">
-
-## Modules et extensions les plus utilisés
-
-| Module ou extension | Usage dans Alf |
-|---|---|
-| **Web et navigateur** | Recherche, extraction de pages et interaction avec des interfaces web quand une API ne suffit pas. |
-| **Terminal, fichiers et exécution de code** | Inspection, modification, tests, automatisation et vérification du résultat réel. |
-| **Git et GitHub App** | Commits attribués au bot, travail sur `dev`, création de PR et séparation entre proposition et fusion humaine. |
-| **Mémoire TencentDB** | Conservation de faits stables et recherche contextuelle dans l’historique, avec une mémoire révisable et non exhaustive. |
-| **Skills** | Chargement de procédures spécialisées uniquement lorsqu’elles correspondent à la tâche. |
-| **Profils et délégation** | Consultation d’un spécialiste ou lancement d’un sous-agent isolé pour une partie bornée du travail. |
-| **Cron** | Veilles et tâches récurrentes avec livraison automatique du compte rendu. |
-| **Vision et documents** | Analyse d’images, extraction de contenu et production de livrables partageables. |
-
-Les modèles et fournisseurs peuvent changer sans modifier le principe général : Hermes sépare le raisonnement, les outils, la mémoire et les canaux de communication.
 
 ## Des skills qui se construisent avec l’expérience
 
@@ -100,10 +86,22 @@ Exemples de skills construites ou enrichies au fil des usages :
 - workflows GitHub, tests et pull requests ;
 - création de documents fidèles à leurs sources ;
 - gouvernance de la bibliothèque de skills.
+...
 
-Les procédures publiques restent génériques. Les préférences personnelles, sources privées et paramètres d’accès sont conservés ailleurs.
+## L’équipe de subagents :
 
-## L’équipe, en version condensée
+Avec Alf nous avons définit une équipe de sous-agents aux personas complémentaires, inspiré des études scientifiques en psychologie du travail et du management, et aux missions adaptés à nos besoins :
+
+| Forge | Développer un code simple et maintenable. |
+| Patch | Diagnostiquer les bug |
+| Surmoi | Revue critique, sécurité, secrets |
+| Ziggy | Idéation, angles inattendus |
+| Pixel | UI/UX, sites et interfaces web |
+| DataFox | Data, SQL, Python, Sheets
+| Mosaic | Documentation, synthèses, plans, décisions et mémoire collective. |
+| Sentinelle | VPS, Caddy, service
+| Boussole | Stratégie produit/carrière, arbitrage impact-effort, priorisation. |
+
 
 Alf décide d’abord s’il a besoin d’aide. Dans la majorité des demandes simples, il travaille seul.
 
@@ -113,7 +111,7 @@ Quand la spécialisation apporte une vraie valeur, il choisit quelques profils p
 - **Décider et critiquer** : Boussole mesure l’impact et le coût de coordination, Surmoi cherche les risques concrets.
 - **Apporter une spécialité** : DataFox analyse les données, Mosaic documente, Ziggy explore, Pixel travaille l’interface.
 
-Les profils ont des configurations et des sessions distinctes, mais ils ne constituent pas des sandboxes de sécurité. Alf consolide leurs contributions et garde la responsabilité de la décision finale. Deux cycles de critique au maximum ; ensuite, il tranche.
+Les profils ont des configurations et des sessions distinctes. Alf consolide leurs contributions et garde la responsabilité de la décision finale. Deux cycles de critique au maximum ; ensuite, il tranche.
 
 ## Modes de travail
 
@@ -140,54 +138,6 @@ Ces modes sont des repères, pas des chaînes rigides. Alf retire un agent si so
 
 Un plan ne remplace pas un livrable. Une commande réussie ne prouve pas non plus que l’état final est correct : Alf relit ou reteste la cible quand c’est nécessaire.
 
-## Mémoire et contexte
-
-La mémoire d’Alf combine des fichiers Markdown courts et un fournisseur de mémoire externe. Les deux couches n’ont pas le même rôle.
-
-### Les fichiers `.md`
-
-| Fichier | Fonction |
-|---|---|
-| `SOUL.md` | Définit la personnalité, le ton et les principes de fonctionnement. Ce n’est pas une base de faits sur l’utilisateur. |
-| `USER.md` | Contient un profil compact : préférences et faits stables utiles dans de nombreuses sessions. |
-| `MEMORY.md` | Conserve les notes durables de l’agent sur son environnement, ses conventions et les leçons à retenir. |
-| fichiers de contexte | Stockent des informations thématiques plus détaillées. Alf ne les charge que lorsqu’une demande en a besoin. |
-| `SKILL.md` | Décrit une procédure réutilisable. Une skill explique comment travailler ; elle ne remplace pas la mémoire personnelle. |
-
-`USER.md` et `MEMORY.md` sont injectés dans le contexte lorsque la mémoire intégrée est activée. Ils restent volontairement courts : une mémoire compacte coûte moins de tokens, se relit mieux et limite les contradictions.
-
-### TencentDB via API
-
-Le fournisseur actif est `memory_tencentdb`. Dans cette architecture, Hermes communique avec un service de mémoire par API ; aucune connexion directe à la base n’est nécessaire pendant une conversation.
-
-Le traitement suit quatre niveaux :
-
-1. **L0 — conversations** : le service capture les échanges bruts autorisés.
-2. **L1 — faits structurés** : un modèle appelé par API extrait les préférences, événements et instructions durables.
-3. **L2 — scènes et thèmes** : les faits liés sont regroupés pour restituer un contexte cohérent sans renvoyer tout l’historique.
-4. **L3 — synthèse du profil** : une vue compacte résume les tendances stables utiles à l’agent.
-
-Pour la recherche, une API d’embeddings transforme les souvenirs en vecteurs. Le fournisseur maintient un index vectoriel et un index plein texte. À chaque nouvelle demande, Hermes envoie une requête de rappel à l’API ; celle-ci classe les éléments pertinents et ne renvoie qu’un petit extrait à injecter dans le contexte.
-
-```mermaid
-sequenceDiagram
-    participant U as Utilisateur
-    participant H as Hermes / Alf
-    participant M as API mémoire
-    participant L as API LLM
-    participant E as API embeddings
-
-    U->>H: Nouveau message
-    H->>M: Recherche de souvenirs pertinents
-    M-->>H: Extraits classés
-    H->>U: Réponse contextualisée
-    H->>M: Échange autorisé à mémoriser
-    M->>L: Extraction des faits structurés
-    M->>E: Création des vecteurs
-    M-->>M: Indexation L0 → L3
-```
-
-Cette mémoire est bornée, révisable et potentiellement incomplète. Une API disponible ou une recherche réussie ne garantit pas qu’un souvenir est exact. Les informations importantes sont donc vérifiées contre leur source actuelle avant une décision à conséquences. Les clés, URL privées et enregistrements bruts ne sont pas publiés dans ce dépôt.
 
 ## Garde-fous
 
@@ -198,19 +148,12 @@ Cette mémoire est bornée, révisable et potentiellement incomplète. Une API d
 - aucun secret ou contexte privé dans les livrables publics ;
 - validation humaine adaptée au risque pour les actions sensibles ou irréversibles.
 
-Une revue par plusieurs agents améliore parfois le résultat. Elle ne garantit ni la vérité, ni l’absence d’erreur, ni une isolation de sécurité.
+## Wokflow de developpement 
+Workflow adapté au développement avec un agent IA, serveurs de dev et de production sont physiquement séparés.
+L'agent est maitre de son serveur de dev mais n'a pas de droit en écriture sur le serveur de production.
+L'agent pousse son code sur la branche dev du projet et fait des Pull Request, qui sont analysés et mergés si OK
 
-## Ce que ce dépôt n’est pas
-
-- une distribution officielle de Hermes Agent ;
-- une promesse d’autonomie sans contrôle ;
-- une copie de la mémoire ou des prompts privés d’Alf ;
-- un inventaire de l’infrastructure et des accès disponibles ;
-- une garantie qu’un modèle ou un service externe sera toujours exact et disponible.
-
-## Projet en évolution
-
-Alf évolue avec les usages : nouveaux outils, skills plus précises, mémoire mieux structurée et orchestration plus sobre. Les changements importants passent par `dev`, puis par une pull request examinée avant fusion dans `main`.
+<img src="assets/Sans-titre-2026-09-15-0942.png">
 
 ---
 
