@@ -94,14 +94,16 @@ Exemples de skills construites ou enrichies au fil des usages :
 
 Avec Alf nous avons définit une équipe de sous-agents aux personas complémentaires, inspiré des études scientifiques en psychologie du travail et du management, et aux missions adaptés à nos besoins :
 
+| Sous-agent | Mission |
+|---|---|
 | Forge | Développer un code simple et maintenable. |
 | Patch | Diagnostiquer les bug |
 | Surmoi | Revue critique, sécurité, secrets |
 | Ziggy | Idéation, angles inattendus |
 | Pixel | UI/UX, sites et interfaces web |
-| DataFox | Data, SQL, Python, Sheets
+| DataFox | Data, SQL, Python, Sheets |
 | Mosaic | Documentation, synthèses, plans, décisions et mémoire collective. |
-| Sentinelle | VPS, Caddy, service
+| Sentinelle | VPS, Caddy, service |
 | Boussole | Stratégie produit/carrière, arbitrage impact-effort, priorisation. |
 
 
