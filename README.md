@@ -1,214 +1,173 @@
 # Alf — agent IA autonome basé sur Hermes
 
-> Un agent personnel capable de raisonner, d’utiliser des outils réels et de coordonner une petite équipe de spécialistes — sans transformer chaque demande en réunion interminable.
-
 [![Hermes Agent](https://img.shields.io/badge/Hermes-Agent-6f42c1)](https://github.com/NousResearch/hermes-agent)
 [![Langue](https://img.shields.io/badge/langue-français-0055A4)](#)
 [![Statut](https://img.shields.io/badge/statut-expérimental-orange)](#)
 
+## Le mot d’Alf
+
+<img src="assets/alf-avatar.jpg" alt="Avatar d’Alf" width="180" align="right">
+
+Bonjour, moi c’est **Alf**.
+
+Je suis un agent IA personnel construit sur [Hermes Agent](https://github.com/NousResearch/hermes-agent). Je travaille depuis Discord ou le terminal, j’utilise de vrais outils et je garde une mémoire de travail entre les sessions. Quand une tâche devient complexe, je peux demander de l’aide à quelques profils spécialisés. Quand elle est simple, je la traite seul. Inutile de convoquer neuf consultants pour corriger une virgule.
+
+Mon rôle n’est pas de produire une réponse qui *a l’air* juste. Je dois livrer quelque chose d’utilisable, puis le vérifier avec les moyens adaptés : tests, logs, diff Git, sources ou lecture de l’état final.
+
+Je reste un système expérimental. Je peux me tromper, perdre une information ou rencontrer un outil indisponible. Les actions sensibles gardent donc une validation humaine et des contrôles renforcés.
+
+<br clear="right">
+
 ## Pourquoi ce dépôt ?
 
-Ce dépôt présente **Alf**, mon agent IA personnel construit sur [Hermes Agent](https://github.com/NousResearch/hermes-agent).
+Ce dépôt décrit le fonctionnement public d’Alf. Ce n’est ni une distribution officielle de Hermes, ni un export de sa configuration privée.
 
-Il ne s’agit ni d’un chatbot classique ni d’un nouveau framework : c’est une configuration concrète de Hermes combinant une personnalité, des outils, une mémoire persistante, des procédures réutilisables et plusieurs profils spécialisés.
+La formule courte :
 
-L’objectif est simple : **produire un résultat réel, vérifié et proportionné à l’enjeu**.
+> **Comprendre → choisir les bons outils → agir → vérifier → mémoriser ce qui sera réutilisable.**
 
-Les profils présentés ci-dessous sont réellement configurés dans cette installation d’Alf. Ils possèdent des configurations et des sessions distinctes, mais ne doivent pas être confondus avec des conteneurs ou des frontières de sécurité fortes. Pour une tâche ponctuelle, Alf peut aussi lancer un sous-agent isolé de la conversation principale sans mobiliser un profil durable.
+Aucun secret, historique privé, identifiant, chemin interne ou détail d’infrastructure exploitable n’a vocation à être publié ici.
 
-## Ce qu’Alf sait faire
+## Ce qu’Alf peut faire
 
-Selon la demande et les autorisations accordées, Alf peut notamment :
+Selon les outils activés et les autorisations accordées, Alf peut :
 
-- rechercher, comparer et citer des sources web ;
-- lire, créer et modifier des fichiers ;
-- exécuter du code et des commandes système ;
-- travailler sur des dépôts Git et préparer des pull requests ;
+- rechercher et confronter des sources web ;
+- lire, écrire et analyser des fichiers ;
+- exécuter du code et des commandes ;
+- piloter un navigateur ;
 - analyser des données et produire des documents ;
-- automatiser des tâches récurrentes avec des planifications ;
-- conserver des préférences et des faits utiles entre les sessions ;
-- déléguer une partie complexe à un profil spécialisé ;
-- vérifier le résultat obtenu avant de déclarer le travail terminé.
+- travailler avec Git, pousser une branche et ouvrir une pull request ;
+- planifier des veilles et des tâches récurrentes ;
+- utiliser la vision et la synthèse vocale ;
+- retrouver une décision dans l’historique ou la mémoire ;
+- déléguer un travail spécialisé, puis contrôler le livrable.
 
-La présence d’un outil ne vaut pas autorisation permanente : le niveau de contrôle augmente avec le risque de l’action.
+Disposer d’un outil ne signifie pas qu’il peut être utilisé sans limite. Le périmètre et le niveau de contrôle dépendent du risque.
 
-## Principe directeur
+## Les gateways
 
-> **Alf orchestre. Forge construit. Patch prouve. Surmoi critique les risques réels. DataFox mesure. Mosaic mémorise. Sentinelle protège. Boussole évalue l’impact réel et le coût d’orchestration. Ziggy et Pixel enrichissent seulement quand nécessaire.**
+Le **gateway Hermes** est le pont entre le moteur de l’agent, ses outils et les plateformes de messagerie. Il fonctionne comme un service permanent : il reçoit un message, retrouve la bonne session, transmet la demande à l’agent et renvoie le résultat sur le canal d’origine.
 
-Alf reste responsable de la décision finale. Les autres profils conseillent, produisent, vérifient ou alertent ; ils ne remplacent pas l’arbitrage du leader.
+### Discord
 
-## Architecture générale
+Discord est l’interface principale d’Alf. Le gateway gère les conversations, les fils, les pièces jointes, les réponses longues et, lorsque la fonction est activée, les échanges vocaux. Les identifiants de serveurs, salons et utilisateurs restent hors de ce dépôt.
 
-```mermaid
-flowchart TD
-    U[Utilisateur] --> A[Alf — leader]
-    A --> Q{Demande triviale ?}
-    Q -->|Oui| D[Réponse ou action directe]
-    Q -->|Non| R[Choix du mode de travail]
+### Terminal et CLI
 
-    R --> B[Boussole — impact et stratégie]
-    R --> F[Forge — construction]
-    R --> P[Patch — diagnostic et preuves]
-    R --> S[Surmoi — risques]
-    R --> X[Profils spécialisés si utiles]
+La CLI Hermes sert au développement, au diagnostic et aux opérations directes. Elle donne accès aux mêmes capacités fondamentales que le gateway, sans passer par une plateforme de messagerie.
 
-    X --> DF[DataFox — données]
-    X --> M[Mosaic — documentation]
-    X --> SE[Sentinelle — production]
-    X --> Z[Ziggy — créativité]
-    X --> PX[Pixel — interface]
+### Tâches planifiées
 
-    B --> A
-    F --> A
-    P --> A
-    S --> A
-    DF --> A
-    M --> A
-    SE --> A
-    Z --> A
-    PX --> A
+Le planificateur réveille une session autonome à l’heure prévue. Il sert aux veilles, contrôles périodiques et rappels. Chaque exécution repart avec un mandat explicite et livre son résultat vers une destination autorisée.
 
-    A --> V[Vérification du livrable]
-    V --> O[Résultat, décision ou prochaine action]
-```
+Hermes propose aussi des adaptateurs pour d’autres plateformes. Leur disponibilité dépend de l’installation ; ce dépôt ne prétend pas qu’elles sont toutes configurées ici.
 
-## Une équipe spécialisée, pas une foule d’agents
+## Modules et extensions les plus utilisés
 
-| Profil | Rôle | Question principale |
+| Module ou extension | Usage dans Alf |
+|---|---|
+| **Web et navigateur** | Recherche, extraction de pages et interaction avec des interfaces web quand une API ne suffit pas. |
+| **Terminal, fichiers et exécution de code** | Inspection, modification, tests, automatisation et vérification du résultat réel. |
+| **Git et GitHub App** | Commits attribués au bot, travail sur `dev`, création de PR et séparation entre proposition et fusion humaine. |
+| **Mémoire TencentDB** | Conservation de faits stables et recherche contextuelle dans l’historique, avec une mémoire révisable et non exhaustive. |
+| **Skills** | Chargement de procédures spécialisées uniquement lorsqu’elles correspondent à la tâche. |
+| **Profils et délégation** | Consultation d’un spécialiste ou lancement d’un sous-agent isolé pour une partie bornée du travail. |
+| **Cron** | Veilles et tâches récurrentes avec livraison automatique du compte rendu. |
+| **Vision et documents** | Analyse d’images, extraction de contenu et production de livrables partageables. |
+
+Les modèles et fournisseurs peuvent changer sans modifier le principe général : Hermes sépare le raisonnement, les outils, la mémoire et les canaux de communication.
+
+## Des skills qui se construisent avec l’expérience
+
+Une **skill** est une procédure en Markdown que l’agent charge à la demande. Elle décrit comment traiter une famille de problèmes, quels contrôles effectuer et quels pièges éviter.
+
+Alf peut créer une nouvelle skill ou améliorer une skill existante après une tâche difficile, une correction utilisateur ou la découverte d’une méthode réutilisable. Il ne mémorise pas seulement *ce qui s’est passé* ; il conserve surtout *comment mieux le refaire*.
+
+Exemples de skills construites ou enrichies au fil des usages :
+
+- orchestration sobre d’une équipe de profils Hermes ;
+- maintenance et diagnostic d’une installation Hermes ;
+- veilles récurrentes avec déduplication et sources ;
+- recherche fondée sur des sources officielles ;
+- maintenance d’applications web et validation visuelle ;
+- workflows GitHub, tests et pull requests ;
+- création de documents fidèles à leurs sources ;
+- gouvernance de la bibliothèque de skills.
+
+Les procédures publiques restent génériques. Les préférences personnelles, sources privées et paramètres d’accès sont conservés ailleurs.
+
+## L’équipe, en version condensée
+
+Alf décide d’abord s’il a besoin d’aide. Dans la majorité des demandes simples, il travaille seul.
+
+Quand la spécialisation apporte une vraie valeur, il choisit quelques profils parmi trois groupes :
+
+- **Construire et prouver** : Forge développe, Patch diagnostique et teste, Sentinelle encadre les opérations sensibles.
+- **Décider et critiquer** : Boussole mesure l’impact et le coût de coordination, Surmoi cherche les risques concrets.
+- **Apporter une spécialité** : DataFox analyse les données, Mosaic documente, Ziggy explore, Pixel travaille l’interface.
+
+Les profils ont des configurations et des sessions distinctes, mais ils ne constituent pas des sandboxes de sécurité. Alf consolide leurs contributions et garde la responsabilité de la décision finale. Deux cycles de critique au maximum ; ensuite, il tranche.
+
+## Modes de travail
+
+| Mode | Situation | Coordination |
 |---|---|---|
-| **Alf** | Leader et orchestrateur | Quelle est la décision finale la plus utile ? |
-| **Forge** | Développement et construction | Comment livrer simplement un artefact fonctionnel ? |
-| **Patch** | Diagnostic et validation | Quelle hypothèse est prouvée par les tests ou les logs ? |
-| **Surmoi** | Revue critique et sécurité | Existe-t-il un risque concret qui bloque l’action ? |
-| **DataFox** | Données et mesure | Que montrent réellement les données ? |
-| **Mosaic** | Documentation et mémoire | Quelle connaissance mérite d’être conservée ? |
-| **Sentinelle** | Protection de la production | Le changement est-il réversible, observable et sûr ? |
-| **Boussole** | Stratégie et impact | Le bénéfice justifie-t-il l’effort et l’orchestration ? |
-| **Ziggy** | Exploration créative | Quelle piste non évidente mérite d’être examinée ? |
-| **Pixel** | UX et interface | Le résultat est-il clair et utilisable ? |
+| **0** | Demande triviale | Alf agit seul. |
+| **A** | Bug simple | Patch vérifie l’hypothèse, Forge corrige, Alf valide. |
+| **B** | Incident ou production | Diagnostic, réversibilité et revue des risques avant action. |
+| **C** | Nouvelle fonctionnalité | Valeur, conception, construction, tests et documentation. |
+| **D** | Données ou portfolio | Mesure, critères explicites et livrable vérifiable. |
+| **E** | Réflexion complexe | Deux perspectives utiles au maximum, puis arbitrage d’Alf. |
 
-Tous les profils ne sont pas activés à chaque demande. **L’orchestration elle-même a un coût** en temps, en calcul et en coordination.
-
-## Les modes de travail
-
-### Mode 0 — demande triviale
-
-Alf répond ou agit seul. Une correction de typo n’a pas besoin d’un comité de pilotage intergalactique.
-
-### Mode A — bug simple
-
-**Patch → Forge → Alf**
-
-Le problème est reproduit, une hypothèse est vérifiée, la correction minimale est implémentée puis testée.
-
-### Mode B — incident sérieux ou production
-
-**Patch → Sentinelle → Forge → Surmoi → Alf**
-
-Le diagnostic précède la modification. La sécurité, la réversibilité, les journaux et le plan de retour arrière deviennent obligatoires.
-
-### Mode C — nouvelle fonctionnalité
-
-**Boussole → Ziggy → Pixel si interface → Forge → Patch → Surmoi → Mosaic → Alf**
-
-La valeur est évaluée avant la construction. L’implémentation est ensuite testée, critiquée et documentée.
-
-### Mode D — données, emploi ou portfolio
-
-**DataFox → Boussole → Mosaic → Alf**, avec Forge si un artefact technique doit être construit.
-
-Les faits et les critères de décision priment sur l’intuition.
-
-### Mode E — réflexion complexe
-
-Alf mobilise au maximum deux perspectives utiles parmi **Boussole, Surmoi, Ziggy et Mosaic**, sauf enjeu exceptionnel. Après deux cycles de critique au maximum, Alf arbitre.
+Ces modes sont des repères, pas des chaînes rigides. Alf retire un agent si son intervention n’apporte rien.
 
 ## Cycle d’exécution
 
-Une demande non triviale suit généralement ce chemin :
+1. Comprendre le résultat attendu et les contraintes.
+2. Vérifier les prérequis et évaluer le risque.
+3. Choisir le minimum d’outils et de profils nécessaires.
+4. Agir sur le système réel lorsque l’action est autorisée.
+5. Vérifier avec des tests, logs, diffs, sources ou critères explicites.
+6. Corriger si la preuve contredit l’hypothèse.
+7. Livrer une décision claire et mémoriser seulement ce qui sera utile.
 
-1. **Comprendre** le résultat attendu et les contraintes.
-2. **Évaluer** le risque, les prérequis et le coût d’orchestration.
-3. **Choisir** le minimum de profils et d’outils nécessaires.
-4. **Agir** sur le système réel lorsque l’action est autorisée.
-5. **Vérifier** avec des tests, logs, diffs, sources ou critères explicites.
-6. **Corriger** si la preuve contredit l’hypothèse, avec deux cycles de critique maximum.
-7. **Décider** : go, no-go, correction minimale, prochaine action ou clôture.
-8. **Mémoriser** uniquement ce qui sera réellement utile plus tard.
-
-Un plan n’est pas considéré comme un livrable lorsque la demande porte sur une réalisation. De même, une commande réussie ne prouve pas à elle seule que l’état final est correct : Alf relit ou reteste la cible lorsque c’est nécessaire.
+Un plan ne remplace pas un livrable. Une commande réussie ne prouve pas non plus que l’état final est correct : Alf relit ou reteste la cible quand c’est nécessaire.
 
 ## Mémoire et contexte
 
-Alf distingue plusieurs niveaux d’information :
+Alf sépare :
 
-- **persona** : ton, identité et principes de fonctionnement ;
-- **mémoire persistante** : préférences et faits stables ;
-- **contexte thématique** : informations détaillées chargées seulement si elles sont pertinentes ;
-- **historique de session** : éléments temporaires liés à une conversation ;
-- **skills** : procédures réutilisables apprises au fil des tâches.
+- sa persona et ses principes de fonctionnement ;
+- les faits stables et préférences durables ;
+- le contexte thématique chargé seulement quand il est pertinent ;
+- l’historique temporaire des sessions ;
+- les skills qui décrivent des procédures réutilisables.
 
-Cette séparation limite le bruit dans le contexte et évite de traiter une information ponctuelle comme une règle permanente.
-
-La mémoire reste **bornée, révisable et potentiellement incomplète**. Une information importante doit toujours être confrontée à sa source actuelle avant de guider une décision à conséquences.
+La mémoire est bornée, révisable et potentiellement incomplète. Une information importante doit être confrontée à sa source actuelle avant une décision à conséquences.
 
 ## Garde-fous
 
-- **Sobriété** : pas de délégation si Alf peut répondre correctement seul.
-- **Preuves** : tests, logs, diffs, sources ou critères de sortie plutôt que réussite supposée.
-- **Moindre privilège** : les capacités disponibles ne sont utilisées que dans le périmètre autorisé.
-- **Production protégée** : contrôles renforcés, sauvegarde et retour arrière avant toute action sensible.
-- **Désaccord utile** : Surmoi bloque uniquement sur un risque précis ; sinon il indique qu’aucun risque bloquant n’est identifié.
-- **Boucles bornées** : deux itérations de critique maximum avant arbitrage.
-- **Confidentialité** : secrets, identifiants et données privées ne sont pas destinés aux livrables publics.
-- **Décision humaine** : les opérations sensibles ou irréversibles conservent une porte de validation adaptée au risque.
+- pas de délégation si Alf peut traiter correctement la demande seul ;
+- tests, logs, diffs ou sources avant d’annoncer une réussite ;
+- sauvegarde et retour arrière avant une modification sensible ;
+- arrêt plutôt qu’invention lorsqu’une information indispensable manque ;
+- aucun secret ou contexte privé dans les livrables publics ;
+- validation humaine adaptée au risque pour les actions sensibles ou irréversibles.
 
-## Exemples de demandes
-
-- « Analyse ce bug, corrige-le et ouvre une pull request avec les preuves de test. »
-- « Compare ces offres d’emploi avec mon profil et classe-les selon des critères explicites. »
-- « Transforme ces notes en document structuré sans perdre les décisions ni les responsables. »
-- « Surveille cette source chaque semaine et alerte-moi uniquement en cas de changement utile. »
-- « Vérifie l’état d’un service, diagnostique l’incident et propose la correction minimale réversible. »
-
-## Socle technique
-
-Alf s’appuie sur les capacités de Hermes Agent :
-
-- modèles et fournisseurs interchangeables ;
-- outils de terminal, fichiers, web, navigateur, vision et génération de documents ;
-- skills chargeables à la demande ;
-- mémoire persistante et recherche dans l’historique ;
-- profils indépendants et délégation de sous-tâches ;
-- exécution planifiée et intégrations de messagerie ;
-- contrôle des actions, vérification et reprise sur erreur.
-
-La disponibilité exacte de chaque capacité dépend de la configuration, des identifiants installés et des permissions accordées.
-
-Les profils séparent notamment leurs configurations, sessions, mémoires et skills. Cette séparation facilite la spécialisation ; elle ne constitue pas, à elle seule, une sandbox de sécurité.
-
-## Limites
-
-- Un modèle peut produire une réponse erronée, incomplète ou devenue obsolète.
-- Une revue contradictoire améliore la robustesse, mais ne prouve pas qu’une conclusion est vraie.
-- Un outil ou un service externe peut être indisponible, refuser une action ou retourner un résultat partiel.
-- La mémoire ne remplace ni une source faisant autorité ni la vérification de l’état réel.
-- Les décisions importantes restent soumises à une validation humaine adaptée à leurs conséquences.
-- Les contrôles décrits réduisent le risque ; ils ne garantissent ni l’absence d’erreur ni une sécurité absolue.
+Une revue par plusieurs agents améliore parfois le résultat. Elle ne garantit ni la vérité, ni l’absence d’erreur, ni une isolation de sécurité.
 
 ## Ce que ce dépôt n’est pas
 
 - une distribution officielle de Hermes Agent ;
 - une promesse d’autonomie sans contrôle ;
-- un export de configuration prêt à déployer ;
-- un dépôt contenant des secrets ou l’infrastructure privée de l’agent.
-
-Il documente une **façon de concevoir et d’exploiter un agent personnel** : autonome sur les tâches réversibles, prudent sur les changements sensibles et exigeant sur les preuves.
+- une copie de la mémoire ou des prompts privés d’Alf ;
+- un inventaire de l’infrastructure et des accès disponibles ;
+- une garantie qu’un modèle ou un service externe sera toujours exact et disponible.
 
 ## Projet en évolution
 
-Alf évolue avec les usages : nouveaux skills, meilleurs contrôles, mémoire mieux structurée et orchestration plus sobre. Les changements importants passent par une branche de développement puis une pull request avant intégration.
+Alf évolue avec les usages : nouveaux outils, skills plus précises, mémoire mieux structurée et orchestration plus sobre. Les changements importants passent par `dev`, puis par une pull request examinée avant fusion dans `main`.
 
 ---
 
