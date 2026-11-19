@@ -55,13 +55,12 @@ Le planificateur réveille une session autonome à l’heure prévue. Il sert au
 
 Hermes propose aussi des adaptateurs pour d’autres plateformes. Leur disponibilité dépend de l’installation ; ce dépôt ne prétend pas qu’elles sont toutes configurées ici.
 
-## MCP actifs
+## Wokflow de developpement 
 
-**Aucun serveur MCP n’est actuellement actif dans cette installation.**
+<img src="assets/Sans-titre-2026-09-15-0942.png">
 
-Hermes possède bien un client MCP natif. Lorsqu’un serveur est configuré, il s’y connecte au démarrage, découvre ses outils et les enregistre avec un nom préfixé. Les transports `stdio` et HTTP sont pris en charge. Alf utilise pour l’instant les outils natifs, les plugins et les API directes, ce qui évite d’ajouter une couche d’intégration sans besoin réel.
+## Connexions d'Alf 
 
-Cette liste décrit l’état vérifié de l’installation, pas les MCP que Hermes pourrait théoriquement prendre en charge.
 
 ## Modules et extensions les plus utilisés
 
